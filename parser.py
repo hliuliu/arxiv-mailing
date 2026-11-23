@@ -38,18 +38,6 @@ class Parser(object):
 				year = today.year if year is None else year
 				)
 		self._unread_dates.append(dt)
-		'''
-		if self._curline>=len(self._content):
-			self._content = []
-			self._curline = 0 
-			if not self._unread_dates:
-				self._read_content(dt)
-			else:
-				self._read_content(self._unread_dates.pop(0))
-				self._unread_dates.append(dt)
-		else:
-			self._unread_dates.append(dt)
-		'''
 
 	def fetch_next_entry(self):
 		while 1:
@@ -71,6 +59,12 @@ class Parser(object):
 				else:
 					entry.append(line)
 				self._curline+=1
+
+	def __iter__(self):
+		entry = self.fetch_next_entry()
+		while entry is not None:
+			yield entry
+			entry = self.fetch_next_entry()
 
 
 

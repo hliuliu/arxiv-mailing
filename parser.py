@@ -1,6 +1,8 @@
 
 import os, re
 
+import entry as _entry
+
 from datetime import datetime
 
 
@@ -54,8 +56,9 @@ class Parser(object):
 					self._curline+=1
 					continue
 				if re.search('^(-|%)*$', line):
-					self._curline+=1
-					return entry
+					if entry:
+						self._curline+=1
+						return _entry.Entry(entry)
 				else:
 					entry.append(line)
 				self._curline+=1

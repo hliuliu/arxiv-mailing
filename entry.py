@@ -24,7 +24,6 @@ class Entry(object):
 				self._abstract = ' '.join(self._partitioned_content[3])
 			else:
 				self._abstract = None
-
 		else:
 			raise Error('Invalid Content Format')
 
@@ -49,6 +48,10 @@ class Entry(object):
 	@property
 	def comment(self):
 		return self._comment
+
+	@property
+	def arxiv_id(self):
+		return self._arxiv_id
 	
 
 	def filesize(self, include_units=False):
@@ -59,22 +62,44 @@ class Entry(object):
 	@staticmethod
 	def _parse_authors(authors):
 		#TODO
-		return authors # do nothing for now
+		return authors # do nothing for 
+
+	@staticmethod
+	def _parse_categories(categories):
+		#TODO
+		return categories # do nothing for now
 
 	def _parse_preamble(self):
 		self._title = None
-		self._comment = None
+		self._comment = ''
+		self._arxiv_id = None
+		commentlines = []
+		readingcomment = False
 		for line in self._preamble:
+			if readingcomment:
+				m = re.search(r'^\s+(.*)$', line)
+				if m:
+					commentlines.append(line.strip())
+					continue
+				else:
+					readingcomment = False
 			if ':' in line:
 				key, value = re.split(r':\s*', line, maxsplit=1)
 				key = key.strip().lower()
 				if key=='title':
 					self._title = value.strip()
 				if key=='comments':
-					self._comment = value.strip()
+					readingcomment = True
+					commentlines.append(value.strip())
 				if key=='authors':
 					self._author_list = self._parse_authors(value)
+				if key=='categories':
+					self._category_list = self._parse_categories(value)
+				if key=='arxiv' and self._arxiv_id is None:
+					# TODO: handle cross-listing
+					self._arxiv_id = value
 				# TODO
+		self._comment = ' '.join(commentlines)
 		
 
 

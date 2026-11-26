@@ -51,7 +51,7 @@ class Parser(object):
 				self._read_content(self._unread_dates.pop(0))
 			entry = []
 			while self._curline<len(self._content):
-				line = self._content[self._curline].strip()
+				line = self._content[self._curline].rstrip()
 				if not line:
 					self._curline+=1
 					continue
